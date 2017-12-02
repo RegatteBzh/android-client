@@ -2,4 +2,8 @@
     <string name="app_name">sea-race</string>
     <string name="app_login_facebook">Facebook</string>
     <string name="title_activity_main">MainActivity</string>
+
+    <string name="facebook_app_id">169308756959219</string>
+    <string name="fb_login_protocol_scheme">fb169308756959219</string>
+
 </resources>

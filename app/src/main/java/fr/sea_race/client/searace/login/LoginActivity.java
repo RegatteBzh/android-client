@@ -1,6 +1,8 @@
-package fr.sea_race.client.searace;
+package fr.sea_race.client.searace.login;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,12 +17,27 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+
+import fr.sea_race.client.searace.MainActivity;
 import fr.sea_race.client.searace.R;
+
 
 public class LoginActivity extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
     private static int RC_SIGN_IN = 100;
+    private String GoogleClientId = "*********";
+    private Context currentContext;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
+                .requestIdToken(GoogleClientId)
                 .build();
 
         // Build a GoogleSignInClient with the options specified by gso.
@@ -56,6 +73,8 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+
+        currentContext = this;
     }
 
     @Override
@@ -65,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        updateUI(account);
+        GetGoogleSession(account);
     }
 
     private void signIn() {
@@ -91,20 +110,40 @@ public class LoginActivity extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             // Signed in successfully, show authenticated UI.
-            updateUI(account);
+            GetGoogleSession(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w("Login", "signInResult:failed code=" + e.getStatusCode());
-            updateUI(null);
+            GetGoogleSession(null);
         }
     }
 
-    private void updateUI(GoogleSignInAccount account) {
-        if (account != null) {
-            Log.i("Login", account.getEmail());
+    private void GetGoogleSession(GoogleSignInAccount account) {
+        if (account != null && account.getIdToken() != null && !account.getIdToken().isEmpty()) {
+            Log.i("Login",  account.getIdToken());
+
+            new CheckGoogle().execute(account);
+
         }
 
         // perform a post on /auth/google/checkout
+    }
+
+    private class CheckGoogle extends AsyncTask<GoogleSignInAccount, Void, Void> {
+
+        @Override
+        protected Void doInBackground(GoogleSignInAccount... account) {
+            if (account.length == 1) {
+                ServerCheckout checkout = new ServerCheckout(account[0]);
+                Log.i("Server token", ServerCheckout.getToken());
+
+                Intent intent = new Intent(currentContext, MainActivity.class);
+                startActivity(intent);
+            }
+            return null;
+        }
+
+
     }
 }
