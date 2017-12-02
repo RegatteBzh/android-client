@@ -13,13 +13,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
+import fr.sea_race.client.searace.net.ApiRequest;
+
 /**
  * Created by cyrille on 02/12/17.
  */
 
 public class ServerCheckout {
 
-    private String baseUrl = "https://sea-race.fr";
     private String googleAuthCheckoutUrl = "/auth/google/checkout";
     private GoogleSignInAccount googleAccount;
     private static String serverAuthToken = "";
@@ -35,6 +36,7 @@ public class ServerCheckout {
 
     public static void clearToken() {
         serverAuthToken = "";
+        ApiRequest.setToken("");
     }
 
     private String createGooglePostData(String jwtToken) {
@@ -52,8 +54,8 @@ public class ServerCheckout {
         Log.i("POST data", postData);
         try {
 
-            Log.i("HTTP", "Opening connexion to " + baseUrl + googleAuthCheckoutUrl);
-            URL url = new URL(baseUrl + googleAuthCheckoutUrl);
+            Log.i("HTTP", "Opening connexion to " + ApiRequest.baseUrl + googleAuthCheckoutUrl);
+            URL url = new URL(ApiRequest.baseUrl + googleAuthCheckoutUrl);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
 
             // Set method and headers
@@ -89,6 +91,7 @@ public class ServerCheckout {
                 JSONObject jsonObj = new JSONObject(response.toString());
 
                 serverAuthToken = jsonObj.getString("token");
+                ApiRequest.setToken(serverAuthToken);
             }
 
         } catch (MalformedURLException e) {
