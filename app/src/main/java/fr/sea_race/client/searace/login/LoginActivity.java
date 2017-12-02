@@ -35,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
     private static int RC_SIGN_IN = 100;
-    private String GoogleClientId = "*********";
     private Context currentContext;
 
 
@@ -46,8 +45,9 @@ public class LoginActivity extends AppCompatActivity {
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        String googleClientId = getString(R.string.default_web_client_id);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(GoogleClientId)
+                .requestIdToken(googleClientId)
                 .build();
 
         // Build a GoogleSignInClient with the options specified by gso.
@@ -84,7 +84,15 @@ public class LoginActivity extends AppCompatActivity {
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        GetGoogleSession(account);
+        //GetGoogleSession(account);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.i("Token", "Clear session token");
+        ServerCheckout.clearToken();
     }
 
     private void signIn() {
@@ -138,8 +146,10 @@ public class LoginActivity extends AppCompatActivity {
                 ServerCheckout checkout = new ServerCheckout(account[0]);
                 Log.i("Server token", ServerCheckout.getToken());
 
-                Intent intent = new Intent(currentContext, MainActivity.class);
-                startActivity(intent);
+                if (!ServerCheckout.getToken().isEmpty()) {
+                    Intent intent = new Intent(currentContext, MainActivity.class);
+                    startActivity(intent);
+                }
             }
             return null;
         }

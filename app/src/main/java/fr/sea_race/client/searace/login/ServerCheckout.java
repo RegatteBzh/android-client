@@ -33,6 +33,10 @@ public class ServerCheckout {
         return serverAuthToken;
     }
 
+    public static void clearToken() {
+        serverAuthToken = "";
+    }
+
     private String createGooglePostData(String jwtToken) {
         JSONObject result = new JSONObject();
         try {
@@ -52,9 +56,7 @@ public class ServerCheckout {
             URL url = new URL(baseUrl + googleAuthCheckoutUrl);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
 
-            // Set Timeout and method
-            conn.setReadTimeout(5000);
-            conn.setConnectTimeout(5000);
+            // Set method and headers
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
 
