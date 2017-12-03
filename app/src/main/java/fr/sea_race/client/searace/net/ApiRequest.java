@@ -1,5 +1,7 @@
 package fr.sea_race.client.searace.net;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,7 +33,7 @@ public class ApiRequest {
     }
 
     public static URL buildUrl(String route, Map<String, String> query) throws MalformedURLException {
-        String urlStr = baseUrl + apiPrefix + (route.charAt(0) == '/' ? "" : "/") + route;
+        String urlStr = apiPrefix + (route.charAt(0) == '/' ? "" : "/") + route;
 
         // Query params replacement
         Pattern pattern = Pattern.compile(":([^/]*)");
@@ -39,7 +41,7 @@ public class ApiRequest {
         Matcher matcher = pattern.matcher(urlStr);
         while (matcher.find()) {
             String key = matcher.group(1);
-            if (query.containsKey((key))) {
+            if (query!= null && query.containsKey((key))) {
                 matcher.appendReplacement(output, query.get(key));
             } else {
                 matcher.appendReplacement(output, "{" + key + "}");
@@ -47,10 +49,10 @@ public class ApiRequest {
         }
         matcher.appendTail(output);
 
-        return  new URL(output.toString());
+        return  new URL(baseUrl + output.toString());
     }
 
-    private static JSONObject getResponse(HttpsURLConnection conn) throws BadRequestException {
+    private static String getResponse(HttpsURLConnection conn) throws BadRequestException {
         int responseCode = 0;
         try {
             responseCode = conn.getResponseCode();
@@ -67,24 +69,24 @@ public class ApiRequest {
             in.close();
 
             if (responseCode == 200 && !response.toString().isEmpty()) {
-                return new JSONObject(response.toString());
+                Log.i("HTTP response", response.toString());
+                return response.toString();
             } else {
                 throw new BadRequestException(responseCode);
             }
         } catch (IOException e) {
             e.printStackTrace();
             throw new BadRequestException(-1);
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-        return new JSONObject();
     }
 
-    public static JSONObject get(String route, Map<String, String> query) throws BadRequestException, IOException {
+    public static String get(String route, Map<String, String> query) throws BadRequestException, IOException {
 
         URL url = buildUrl(route, query);
 
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+
+        Log.i("HTTPS request", "GET " + url.toString());
 
         // Set method and headers
         conn.setRequestMethod("GET");
@@ -95,10 +97,12 @@ public class ApiRequest {
 
     }
 
-    public static JSONObject bodyQuery(String route, Map<String, String> query, JSONObject data, String verb) throws BadRequestException, IOException {
+    public static String bodyQuery(String route, Map<String, String> query, JSONObject data, String verb) throws BadRequestException, IOException {
         URL url = buildUrl(route, query);
 
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+
+        Log.i("HTTPS request", verb + " " + url.toString());
 
         // Set method and headers
         conn.setRequestMethod(verb);
@@ -115,15 +119,15 @@ public class ApiRequest {
         return getResponse(conn);
     }
 
-    public static JSONObject post(String route, Map<String, String> query, JSONObject data) throws BadRequestException, IOException {
+    public static String post(String route, Map<String, String> query, JSONObject data) throws BadRequestException, IOException {
         return bodyQuery(route, query, data, "POST");
     }
 
-    public static JSONObject put(String route, Map<String, String> query, JSONObject data) throws BadRequestException, IOException {
+    public static String put(String route, Map<String, String> query, JSONObject data) throws BadRequestException, IOException {
         return bodyQuery(route, query, data, "PUT");
     }
 
-    public static JSONObject patch(String route, Map<String, String> query, JSONObject data) throws BadRequestException, IOException {
+    public static String patch(String route, Map<String, String> query, JSONObject data) throws BadRequestException, IOException {
         return bodyQuery(route, query, data, "PATCH");
     }
 
@@ -132,6 +136,8 @@ public class ApiRequest {
         URL url = buildUrl(route, query);
 
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+
+        Log.i("HTTPS request", "DELETE " + url.toString());
 
         // Set method and headers
         conn.setRequestMethod("DELETE");

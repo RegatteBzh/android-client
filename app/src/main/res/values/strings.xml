@@ -6,4 +6,7 @@
     <string name="facebook_app_id">169308756959219</string>
     <string name="fb_login_protocol_scheme">fb169308756959219</string>
 
+    <string name="dashboard_available_races_label">Available races</string>
+    <string name="dashboard_skipper_races_label">Your races</string>
+
 </resources>

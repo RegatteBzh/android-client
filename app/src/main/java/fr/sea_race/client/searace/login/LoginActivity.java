@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -17,17 +18,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-
-import fr.sea_race.client.searace.MainActivity;
+import fr.sea_race.client.searace.main.MainActivity;
 import fr.sea_race.client.searace.R;
 
 
@@ -41,12 +32,16 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
+
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         String googleClientId = getString(R.string.default_web_client_id);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
                 .requestIdToken(googleClientId)
                 .build();
 
@@ -131,29 +126,27 @@ public class LoginActivity extends AppCompatActivity {
         if (account != null && account.getIdToken() != null && !account.getIdToken().isEmpty()) {
             Log.i("Login",  account.getIdToken());
 
-            new CheckGoogle().execute(account);
+            // perform a post on /auth/google/checkout
+            (new AsyncTask<GoogleSignInAccount, Void, Void> () {
 
-        }
+                @Override
+                protected Void doInBackground(GoogleSignInAccount... account) {
+                    if (account.length == 1) {
+                        ServerCheckout checkout = new ServerCheckout(account[0]);
+                        Log.i("Server token", ServerCheckout.getToken());
 
-        // perform a post on /auth/google/checkout
-    }
-
-    private class CheckGoogle extends AsyncTask<GoogleSignInAccount, Void, Void> {
-
-        @Override
-        protected Void doInBackground(GoogleSignInAccount... account) {
-            if (account.length == 1) {
-                ServerCheckout checkout = new ServerCheckout(account[0]);
-                Log.i("Server token", ServerCheckout.getToken());
-
-                if (!ServerCheckout.getToken().isEmpty()) {
-                    Intent intent = new Intent(currentContext, MainActivity.class);
-                    startActivity(intent);
+                        if (!ServerCheckout.getToken().isEmpty()) {
+                            Intent intent = new Intent(currentContext, MainActivity.class);
+                            startActivity(intent);
+                        }
+                    }
+                    return null;
                 }
-            }
-            return null;
+
+
+            }).execute(account);
+
         }
-
-
     }
+
 }
