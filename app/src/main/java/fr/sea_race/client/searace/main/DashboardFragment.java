@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,42 +38,64 @@ public class DashboardFragment extends Fragment {
 
         currentContext = rootView.getContext();
 
-        loadRaces(rootView);
+        loadAvailableRaces(rootView, rootView.getContext());
+        loadCurrentRaces(rootView, rootView.getContext());
 
         return rootView;
     }
 
-    public void loadRaces (View view) {
+    public void loadAvailableRaces (final View view, final Context context) {
 
-        final LinearLayout availableRaceLayout = (LinearLayout) view.findViewById(R.id.dashboard_available_races);
-        availableRaceLayout.removeAllViews();
-
-        final LinearLayout currentRaceLayout = (LinearLayout) view.findViewById(R.id.dashboard_skipper_races);
-        currentRaceLayout.removeAllViews();
-
-        (new AsyncTask<String, Void, Void>() {
+        (new AsyncTask<String, List<Race>, List<Race>>() {
 
             @Override
-            protected Void doInBackground(String... account) {
-                List<Race> availableRaces = Race.getAvailable();
-                for (int i=0; i<availableRaces.size(); i++) {
-                    /*TextView textView = new TextView(currentContext);
-                    textView.setText(availableRaces.get(i).name);
-                    availableRaceLayout.addView(textView);*/
-                    Log.i("Available races", availableRaces.get(i).name);
-                }
-
-                List<Race> currentRaces = Race.getOnGoing();
-                for (int i=0; i<currentRaces.size(); i++) {
-                    /*TextView textView = new TextView(currentContext);
-                    textView.setText(currentRaces.get(i).name);
-                    currentRaceLayout.addView(textView);*/
-                    Log.i("Current races", currentRaces.get(i).name);
-                }
-                return null;
+            protected List<Race> doInBackground(String... account) {
+                return Race.getAvailable();
             }
+
+            @Override
+            protected void onPostExecute(List<Race> availableRaces) {
+                LinearLayout availableRaceLayout = (LinearLayout) view.findViewById(R.id.dashboard_available_races);
+                availableRaceLayout.removeAllViews();
+                for (int i=0; i<availableRaces.size(); i++) {
+                    Button button = new Button(context);
+                    button.setText(availableRaces.get(i).name);
+                    availableRaceLayout.addView(button);
+                    Log.i("Available race", availableRaces.get(i).name);
+                }
+            }
+
         }).execute();
 
+    }
+
+    public void loadCurrentRaces (final View view, final Context context) {
+
+        (new AsyncTask<String, List<Race>, List<Race>>() {
+
+            @Override
+            protected List<Race> doInBackground(String... account) {
+                return Race.getOnGoing();
+            }
+
+            @Override
+            protected void onPostExecute(List<Race> currentRaces) {
+                LinearLayout currentRaceLayout = (LinearLayout) view.findViewById(R.id.dashboard_skipper_races);
+                currentRaceLayout.removeAllViews();
+                for (int i=0; i<currentRaces.size(); i++) {
+                    Button button = new Button(context);
+                    button.setText(currentRaces.get(i).name);
+                    currentRaceLayout.addView(button);
+                    Log.i("Current race", currentRaces.get(i).name);
+                }
+            }
+
+        }).execute();
+
+    }
+
+
+    private void registerRace (String id) {
 
     }
 
