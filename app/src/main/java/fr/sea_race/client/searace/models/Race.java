@@ -39,7 +39,7 @@ public class Race {
         List<Race> result = new ArrayList<Race>();
         try {
             String response = ApiRequest.get("races/available", null);
-            return buildFromString(response);
+            return arrayFromString(response);
         } catch (BadRequestException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -52,7 +52,7 @@ public class Race {
         List<Race> result = new ArrayList<Race>();
         try {
             String response = ApiRequest.get("races/", null);
-            return buildFromString(response);
+            return arrayFromString(response);
         } catch (BadRequestException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -77,7 +77,7 @@ public class Race {
         return null;
     }
 
-    private static List<Race> buildFromString(String serverResponse) {
+    private static List<Race> arrayFromString(String serverResponse) {
         List<Race> result = new ArrayList<Race>();
         try {
             JSONArray jsonRaces = new JSONArray(serverResponse);

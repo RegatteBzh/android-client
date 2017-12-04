@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -27,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     private static int RC_SIGN_IN = 100;
     private Context currentContext;
+    private GoogleSignInAccount account;
 
 
     @Override
@@ -78,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        account = GoogleSignIn.getLastSignedInAccount(this);
         //GetGoogleSession(account);
     }
 
@@ -88,6 +90,10 @@ public class LoginActivity extends AppCompatActivity {
 
         Log.i("Token", "Clear session token");
         ServerCheckout.clearToken();
+        if (account == null) {
+            account = GoogleSignIn.getLastSignedInAccount(this);
+        }
+        GetGoogleSession(account);
     }
 
     private void signIn() {
@@ -146,6 +152,16 @@ public class LoginActivity extends AppCompatActivity {
 
             }).execute(account);
 
+        } else {
+            if (account == null) {
+                Toast.makeText(this, getString(R.string.login_fail),
+                    Toast.LENGTH_LONG).show();
+                Log.wtf("Login", "Account is null");
+            } else {
+                Toast.makeText(this, getString(R.string.login_missing_token),
+                        Toast.LENGTH_LONG).show();
+                Log.wtf("Login", "token: " + account.getIdToken());
+            }
         }
     }
 
