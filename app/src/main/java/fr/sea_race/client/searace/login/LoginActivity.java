@@ -2,7 +2,6 @@ package fr.sea_race.client.searace.login;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,9 +17,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.loopj.android.http.*;
 
-import fr.sea_race.client.searace.main.MainActivity;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+
+import cz.msebera.android.httpclient.*;
+import cz.msebera.android.httpclient.entity.StringEntity;
 import fr.sea_race.client.searace.R;
+import fr.sea_race.client.searace.main.MainActivity;
+import fr.sea_race.client.searace.net.ApiRequest;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -89,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
 
         Log.i("Token", "Clear session token");
-        ServerCheckout.clearToken();
+        ApiRequest.clearToken();
         if (account == null) {
             account = GoogleSignIn.getLastSignedInAccount(this);
         }
@@ -132,25 +140,42 @@ public class LoginActivity extends AppCompatActivity {
         if (account != null && account.getIdToken() != null && !account.getIdToken().isEmpty()) {
             Log.i("Login",  account.getIdToken());
 
-            // perform a post on /auth/google/checkout
-            (new AsyncTask<GoogleSignInAccount, Void, Void> () {
-
-                @Override
-                protected Void doInBackground(GoogleSignInAccount... account) {
-                    if (account.length == 1) {
-                        ServerCheckout checkout = new ServerCheckout(account[0]);
-                        Log.i("Server token", ServerCheckout.getToken());
-
-                        if (!ServerCheckout.getToken().isEmpty()) {
-                            Intent intent = new Intent(currentContext, MainActivity.class);
-                            startActivity(intent);
+            try {
+                JSONObject jsonParams = new JSONObject();
+                jsonParams.put("idToken", account.getIdToken());
+                StringEntity entity = new StringEntity(jsonParams.toString());
+                AsyncHttpClient client = new AsyncHttpClient();
+                client.post(currentContext, ApiRequest.baseUrl + "/auth/google/checkout", entity, "application/json", new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        try {
+                            String token = response.getString("token");
+                            ApiRequest.setToken(token);
+                            if (!token.isEmpty()) {
+                                Intent intent = new Intent(currentContext, MainActivity.class);
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(currentContext, getString(R.string.login_fail), Toast.LENGTH_LONG).show();
+                            }
+                        } catch (JSONException e) {
+                            Toast.makeText(currentContext, getString(R.string.login_fail), Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
                         }
                     }
-                    return null;
-                }
 
-
-            }).execute(account);
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String text, Throwable throwable) {
+                        Toast.makeText(currentContext, getString(R.string.login_fail), Toast.LENGTH_LONG).show();
+                        Log.i("HTTP ERROR", text);
+                    }
+                });
+            } catch (JSONException e) {
+                Toast.makeText(currentContext, getString(R.string.login_fail), Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                Toast.makeText(currentContext, getString(R.string.login_fail), Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
 
         } else {
             if (account == null) {

@@ -4,12 +4,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.sea_race.client.searace.net.ApiRequest;
-import fr.sea_race.client.searace.net.BadRequestException;
 
 /**
  * Created by cyrille on 03/12/17.
@@ -29,33 +26,14 @@ public class Skipper {
         this.race = data.has("race") ? new Race(data.getJSONObject("race")) : null;
     }
 
-    public static List<Skipper> query() {
+    public static List<Skipper> fromJsonArray(JSONArray jsonSkippers) throws JSONException {
         List<Skipper> result = new ArrayList<Skipper>();
-        try {
-            String response = ApiRequest.get("skippers/", null);
-            return arrayFromString(response);
-        } catch (BadRequestException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    private static List<Skipper> arrayFromString(String serverResponse) {
-        List<Skipper> result = new ArrayList<Skipper>();
-        try {
-            JSONArray jsonSkippers = new JSONArray(serverResponse);
-            for (int i = 0; i< jsonSkippers.length(); i++) {
-                Skipper skipper = new Skipper(jsonSkippers.getJSONObject(i));
-                if (skipper != null) {
-                    result.add(skipper);
-                }
+        for (int i = 0; i< jsonSkippers.length(); i++) {
+            Skipper skipper = new Skipper(jsonSkippers.getJSONObject(i));
+            if (skipper != null) {
+                result.add(skipper);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-
         return result;
     }
 }

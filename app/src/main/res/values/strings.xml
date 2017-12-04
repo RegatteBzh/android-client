@@ -10,5 +10,6 @@
     <string name="dashboard_skipper_races_label">Your races</string>
 
     <string name="login_fail">Login failed. Try again</string>
+    <string name="http_fail">Server error</string>
     <string name="login_missing_token">Oh no! Google did not deliver a token</string>
 </resources>
