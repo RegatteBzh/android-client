@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,17 +15,21 @@
 
     <LinearLayout
         android:layout_width="0dp"
+
         android:layout_height="match_parent"
         android:layout_weight="75"
         android:orientation="vertical"
-        android:weightSum="100">
+        android:weightSum="100"
+        >
 
-        <TextView
-            android:id="@+id/skipper_compass"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="40"
-            android:text="@string/dashboard_available_races_label" />
+            <fr.sea_race.client.searace.component.compass
+                android:id="@+id/compass"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="40"
+                custom:showText="true"
+                custom:labelPosition="left" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
