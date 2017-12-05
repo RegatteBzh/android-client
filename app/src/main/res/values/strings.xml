@@ -11,5 +11,8 @@
 
     <string name="login_fail">Login failed. Try again</string>
     <string name="http_fail">Server error</string>
+    <string name="skipper_fail">Server error</string>
     <string name="login_missing_token">Oh no! Google did not deliver a token</string>
+
+    <string name="skipper_speed_label">Speed</string>
 </resources>

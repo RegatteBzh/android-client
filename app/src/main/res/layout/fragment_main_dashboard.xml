@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/linearLayout"
+    android:baselineAligned="false"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
@@ -17,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/dashboard_available_races_label"
-            android:textSize="20dp"/>
+            android:textSize="20sp"/>
 
         <LinearLayout
             android:id="@+id/dashboard_available_races"
@@ -41,7 +42,7 @@
             android:layout_width="590dp"
             android:layout_height="wrap_content"
             android:text="@string/dashboard_skipper_races_label"
-            android:textSize="20dp"/>
+            android:textSize="20sp"/>
 
         <LinearLayout
             android:id="@+id/dashboard_skipper_races"

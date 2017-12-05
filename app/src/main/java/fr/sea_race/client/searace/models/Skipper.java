@@ -15,15 +15,15 @@ import java.util.List;
 public class Skipper {
     public String id;
     public Race race;
+    public double speed;
 
-    public Skipper(String id, Race race) {
-        this.id = id;
-        this.race = race;
+    public Skipper() {
     }
 
     public Skipper(JSONObject data) throws JSONException {
         this.id = data.has("id") ? data.getString("id") : "";
         this.race = data.has("race") ? new Race(data.getJSONObject("race")) : null;
+        this.speed = data.has("speed") ? data.getDouble("speed") : 0;
     }
 
     public static List<Skipper> fromJsonArray(JSONArray jsonSkippers) throws JSONException {

@@ -39,14 +39,19 @@ public class DashboardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.dashboard_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_main_dashboard, container, false);
 
         currentContext = rootView.getContext();
 
-        loadAvailableRaces(rootView, rootView.getContext());
-        loadSkippers(rootView, rootView.getContext());
-
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        loadAvailableRaces(getView(), currentContext);
+        loadSkippers(getView(), currentContext);
     }
 
     public void loadAvailableRaces (final View view, final Context context) {
@@ -128,10 +133,19 @@ public class DashboardFragment extends Fragment {
 
     private void accessSkipper(View v, String id) {
         Log.i("Access skipper", id);
+        Bundle bundle = new Bundle();
+        bundle.putString("skipperId", id);
+        SkipperFragment fragment = new SkipperFragment();
+        fragment.setArguments(bundle);
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.main_container, fragment)
+                .addToBackStack(fragment.getClass().getName())
+                .commit();
     }
 
 
-    private void registerRace (View v, String id) {
+    private void registerRace (final View v, String id) {
         Log.i("Register race", id);
         Map<String, String> query = new HashMap<String, String>();
         query.put("id", id);
@@ -142,6 +156,7 @@ public class DashboardFragment extends Fragment {
                 try {
                     Skipper skipper = new Skipper(response);
                     Log.i("Skipper", skipper.id);
+                    accessSkipper(v, skipper.id);
                 } catch (JSONException e) {
                     Toast.makeText(currentContext, getString(R.string.http_fail), Toast.LENGTH_LONG).show();
                     e.printStackTrace();
