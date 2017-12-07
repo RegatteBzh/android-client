@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -20,33 +22,71 @@ import fr.sea_race.client.searace.R;
 
 public class Compass extends View {
 
-    public Compass(Context context) {
-        super(context);
+    private float bitmapRatio;
+    private float angle;
+    private int ray;
+    private Point center;
+
+    public Compass(final Context context, final AttributeSet attrs, final int defStyle) {
+        super(context, attrs, defStyle);
+        angle = 0;
     }
 
     public Compass(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
+    }
+
+    public Compass(Context context) {
+        this(context, null, 0);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        center  = new Point(getHeight()/2, getHeight()/2);
+        ray = (int)Math.floor(getHeight() * 330.0d / 800.0d + 0.5d);
+
+        loadBackground(canvas);
+
+        drawCursor(canvas, angle);
+    }
+
+    private void loadBackground(Canvas canvas) {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.compass);
-        /*Matrix matrix = new Matrix();
-        matrix.setScale(1.0f / bitmap.getWidth(), 1.0f / bitmap.getHeight());*/
 
-        Log.i("SIZE", "View width: "  + getWidth());
-        Log.i("SIZE", "View height: "  + getHeight());
-        Log.i("SIZE", "Canvas width: "  + canvas.getWidth());
-        Log.i("SIZE", "Canvas height: "  + canvas.getHeight());
-        Log.i("SIZE", "Bitmap width: "  + bitmap.getWidth());
-        Log.i("SIZE", "Bitmap height: "  + bitmap.getHeight());
+        canvas.drawBitmap(
+                bitmap,
+                new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight()),
+                getRect(bitmap),
+                null
+        );
+    }
 
-        //canvas.setBitmap(bitmap);
-        canvas.drawBitmap(bitmap, 0, 0, null);
-        canvas.drawBitmap(bitmap, new Rect(0,0, bitmap.getWidth(), bitmap.getHeight()), new Rect(0,0, canvas.getHeight(), canvas.getHeight()), null);
+    private void drawCursor(Canvas canvas, float cursorAngle) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.cursor);
+        Matrix matrix = new Matrix();
+        matrix.postTranslate((float)(-bitmap.getWidth()/2), (float)(-bitmap.getHeight()));
+        matrix.postRotate(cursorAngle,0,0);
+        matrix.postScale(bitmapRatio, bitmapRatio);
 
+        float x = (float)center.x + (float)ray * (float)Math.sin(Math.toRadians(cursorAngle));
+        float y = (float)center.y - (float)ray * (float)Math.cos(Math.toRadians(cursorAngle));
+        matrix.postTranslate(x, y);
+
+        canvas.drawBitmap(
+                bitmap,
+                matrix,
+                new Paint()
+        );
+    }
+
+    private Rect getRect(Bitmap bitmap) {
+        bitmapRatio = (float)getHeight() / (float)bitmap.getHeight();
+        return getRect(bitmap, bitmapRatio);
+    }
+    private Rect getRect(Bitmap bitmap, float bitmapRatio) {
+        return new Rect(0, 0, (int)Math.floor(bitmap.getWidth() * bitmapRatio + 0.5d), (int)Math.floor(bitmap.getHeight() * bitmapRatio + 0.5d));
     }
 
     @Override
