@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#151B23"
     android:baselineAligned="false"
     android:weightSum="100">
 
@@ -18,14 +20,13 @@
         android:layout_height="match_parent"
         android:layout_weight="75"
         android:orientation="vertical"
-        android:weightSum="100"
-        >
+        android:weightSum="100">
 
-            <fr.sea_race.client.searace.component.Compass
-                android:id="@+id/compass"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="40"/>
+        <fr.sea_race.client.searace.component.Compass
+            android:id="@+id/compass"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="40" />
 
 
         <LinearLayout
@@ -34,46 +35,19 @@
             android:layout_weight="60"
             android:orientation="vertical">
 
-
             <!-- SPEED -->
-            <LinearLayout
+            <fr.sea_race.client.searace.component.DisplayFeature
+                android:id="@+id/speed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/skipper_speed_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/skipper_speed_label"
-                    />
-                <TextView
-                    android:id="@+id/skipper_speed_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/AppTheme.digital"
-                    />
-            </LinearLayout>
+                custom:label="@string/skipper_speed_label" />
 
             <!-- BEARING -->
-            <LinearLayout
+            <fr.sea_race.client.searace.component.DisplayFeature
+                android:id="@+id/direction"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/skipper_direction_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/skipper_direction_label"
-                    />
-                <TextView
-                    android:id="@+id/skipper_direction_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/AppTheme.digital"
-                    />
-            </LinearLayout>
+                custom:label="@string/skipper_direction_label" />
 
         </LinearLayout>
     </LinearLayout>

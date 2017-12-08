@@ -17,12 +17,6 @@ public class Race {
     public String name;
     public String description;
 
-    public Race(String id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
-
     public Race(JSONObject data) throws JSONException {
         id = data.has("id") ? data.getString("id") : "";
         name = data.has("name") ? data.getString("name") : "";

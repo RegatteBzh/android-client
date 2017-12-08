@@ -168,6 +168,12 @@ public class DashboardFragment extends Fragment {
                 Toast.makeText(currentContext, getString(R.string.http_fail), Toast.LENGTH_LONG).show();
                 Log.i("HTTP ERROR", text);
             }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject data) {
+                Toast.makeText(currentContext, getString(R.string.http_fail), Toast.LENGTH_LONG).show();
+                Log.i("HTTP ERROR", data.toString());
+            }
         });
 
     }

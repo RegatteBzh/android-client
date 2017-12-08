@@ -14,6 +14,6 @@
     <string name="skipper_fail">Server error</string>
     <string name="login_missing_token">Oh no! Google did not deliver a token</string>
 
-    <string name="skipper_speed_label">Speed</string>
-    <string name="skipper_direction_label">Direction</string>
+    <string name="skipper_speed_label">Speed:</string>
+    <string name="skipper_direction_label">Direction:</string>
 </resources>

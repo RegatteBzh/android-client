@@ -3,4 +3,8 @@
     <declare-styleable name="Compass">
 
     </declare-styleable>
+
+    <declare-styleable name="DisplayFeature">
+        <attr name="label" format="string" />
+    </declare-styleable>
 </resources>
