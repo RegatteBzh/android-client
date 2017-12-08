@@ -16,6 +16,7 @@ public class Skipper {
     public String id;
     public Race race;
     public double speed;
+    public double direction;
 
     public Skipper() {
     }
@@ -24,6 +25,7 @@ public class Skipper {
         this.id = data.has("id") ? data.getString("id") : "";
         this.race = data.has("race") ? new Race(data.getJSONObject("race")) : null;
         this.speed = data.has("speed") ? data.getDouble("speed") : 0;
+        this.direction = data.has("direction") ? data.getDouble("direction") : 0f;
     }
 
     public static List<Skipper> fromJsonArray(JSONArray jsonSkippers) throws JSONException {

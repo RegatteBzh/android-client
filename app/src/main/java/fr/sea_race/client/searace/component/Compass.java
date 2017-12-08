@@ -9,9 +9,11 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
+import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 
 import fr.sea_race.client.searace.R;
@@ -26,6 +28,7 @@ public class Compass extends View {
     private float angle;
     private int ray;
     private Point center;
+    private OnCompassEventListener mOnCompassEventListener;
 
     public Compass(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
@@ -40,6 +43,7 @@ public class Compass extends View {
         this(context, null, 0);
     }
 
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -50,6 +54,11 @@ public class Compass extends View {
         loadBackground(canvas);
 
         drawCursor(canvas, angle);
+    }
+
+    public void setAngle(float angle) {
+        this.angle = angle % 360;
+        invalidate();
     }
 
     private void loadBackground(Canvas canvas) {
@@ -81,6 +90,35 @@ public class Compass extends View {
         );
     }
 
+    private void computeAngle(float x, float y) {
+        double relativeX = x - center.x;
+        double relativeY = y - center.y;
+        setAngle(360f + (float)Math.toDegrees(Math.atan2(relativeX, -relativeY)));
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        int action = motionEvent.getAction();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                if(mOnCompassEventListener != null)
+                {
+                    mOnCompassEventListener.OnStartAngle(angle);
+                }
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                computeAngle(motionEvent.getX(), motionEvent.getY());
+                return true;
+            case MotionEvent.ACTION_UP:
+                if(mOnCompassEventListener != null)
+                {
+                    mOnCompassEventListener.OnAngleUpdate(angle);
+                }
+                return true;
+        }
+        return super.onTouchEvent(motionEvent);
+    }
+
     private Rect getRect(Bitmap bitmap) {
         bitmapRatio = (float)getHeight() / (float)bitmap.getHeight();
         return getRect(bitmap, bitmapRatio);
@@ -103,5 +141,10 @@ public class Compass extends View {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         //here you have the size of the view and you can do stuff
+    }
+
+    public void setOnCompassEventListener(OnCompassEventListener eventListener)
+    {
+        mOnCompassEventListener = eventListener;
     }
 }

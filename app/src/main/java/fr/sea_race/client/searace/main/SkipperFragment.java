@@ -22,6 +22,8 @@ import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 import fr.sea_race.client.searace.R;
+import fr.sea_race.client.searace.component.Compass;
+import fr.sea_race.client.searace.component.OnCompassEventListener;
 import fr.sea_race.client.searace.models.Skipper;
 import fr.sea_race.client.searace.net.ApiRequest;
 
@@ -60,6 +62,24 @@ public class SkipperFragment extends Fragment {
         super.onResume();
 
         loadSkipper();
+        manageCompass();
+    }
+
+    private void manageCompass() {
+        Compass compass = (Compass)getView().findViewById(R.id.compass);
+        compass.setOnCompassEventListener(new OnCompassEventListener() {
+            @Override
+            public void OnAngleUpdate(float angle) {
+                skipper.direction = angle;
+                TextView direction = (TextView)getView().findViewById(R.id.skipper_direction_value);
+                direction.setText(String.format("%.0f", skipper.direction));
+            }
+
+            @Override
+            public void OnStartAngle(float angle) {
+
+            }
+        });
     }
 
     private void loadSkipper() {
@@ -90,5 +110,12 @@ public class SkipperFragment extends Fragment {
     private void updateView() {
         TextView speed = (TextView)getView().findViewById(R.id.skipper_speed_value);
         speed.setText(String.format("%.2f", skipper.speed));
+
+        TextView direction = (TextView)getView().findViewById(R.id.skipper_direction_value);
+        direction.setText(String.format("%.0f", skipper.direction));
+
+        Compass compass = (Compass)getView().findViewById(R.id.compass);
+        compass.setAngle((float)skipper.direction);
+
     }
 }
