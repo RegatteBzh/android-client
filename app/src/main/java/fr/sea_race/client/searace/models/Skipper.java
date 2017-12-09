@@ -1,9 +1,14 @@
 package fr.sea_race.client.searace.models;
 
+import android.content.Context;
+
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,7 +34,10 @@ public class Skipper {
     public double windRelativeAngle;
     public double windSpeed;
     public Date finished;
-    public boolean hasFinished = false;
+    public LatLng position;
+    public LatLng sailingPosition;
+
+    private boolean _hasFinished = false;
 
 
     public Skipper() {
@@ -53,8 +61,23 @@ public class Skipper {
         long lFinished = data.has("finished") ? data.getLong("finished") : -1;
         if (lFinished >0) {
             this.finished = new Date(lFinished * 1000);
-            this.hasFinished = true;
+            this._hasFinished = true;
         }
+        this.position = data.has("position") ? Model.position(data.getJSONObject("position")) : null;
+        this.sailingPosition = data.has("sailingPosition") ? Model.position(data.getJSONObject("sailingPosition")) : null;
+    }
+
+    public boolean isSpeedValid() {
+        return this.speed>=0;
+    }
+
+    public boolean hasFinished() {
+        return this._hasFinished;
+    }
+
+    public String getFinished(Context context) {
+        DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(context);
+        return dateFormat.format(this.finished);
     }
 
     public static List<Skipper> fromJsonArray(JSONArray jsonSkippers) throws JSONException {
@@ -66,5 +89,13 @@ public class Skipper {
             }
         }
         return result;
+    }
+
+    public double getRelativeAngle(double bearing) {
+        double angle = (bearing - this.direction + 360) % 360;
+        if (angle < 180) {
+            return 180 - angle;
+        }
+        return angle - 180;
     }
 }

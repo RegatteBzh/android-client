@@ -9,8 +9,10 @@ import org.json.JSONObject;
 
 public class Boat {
     public String id;
+    public String name;
 
     public Boat(JSONObject data) throws JSONException {
         this.id = data.has("id") ? data.getString("id") : "";
+        this.name = data.has("name") ? data.getString("name") : "";
     }
 }

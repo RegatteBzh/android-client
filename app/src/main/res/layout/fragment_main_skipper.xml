@@ -13,6 +13,14 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="75" />
+    <!--<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="sea.client.myapplication.MapsActivity" />-->
 
     <LinearLayout
         android:layout_width="0dp"
@@ -48,6 +56,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 custom:label="@string/skipper_direction_label" />
+
+            <!-- DIR WIND -->
+            <fr.sea_race.client.searace.component.DisplayFeature
+                android:id="@+id/wind_direction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                custom:label="@string/skipper_wind_direction_label" />
+
+            <!-- SPEED WIND -->
+            <fr.sea_race.client.searace.component.DisplayFeature
+                android:id="@+id/wind_speed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                custom:label="@string/skipper_wind_speed_label" />
+
+            <!-- FINISHED -->
+            <fr.sea_race.client.searace.component.DisplayFeature
+                android:id="@+id/finished"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                custom:label="@string/skipper_finished_label" />
+
+            <!-- RANK -->
+            <fr.sea_race.client.searace.component.DisplayFeature
+                android:id="@+id/rank"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                custom:label="@string/skipper_rank_label" />
 
         </LinearLayout>
     </LinearLayout>

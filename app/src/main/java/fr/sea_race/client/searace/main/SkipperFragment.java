@@ -11,6 +11,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -37,6 +44,7 @@ public class SkipperFragment extends Fragment {
     private Context currentContext;
     private String skipperId;
     private Skipper skipper;
+    private GoogleMap mMap;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +54,7 @@ public class SkipperFragment extends Fragment {
         if (bundle != null) {
             skipperId = bundle.getString("skipperId", "");
         }
+
     }
 
     @Override
@@ -110,13 +119,36 @@ public class SkipperFragment extends Fragment {
 
     private void updateView() {
         DisplayFeature speed = (DisplayFeature)getView().findViewById(R.id.speed);
-        speed.setValue(String.format("%.2f", skipper.speed));
+        if (skipper.isSpeedValid()) {
+            speed.setValue(String.format("%.2f %s", skipper.speed, getString(R.string.speed_unit)));
+        } else {
+            speed.setValue("--");
+        }
 
         DisplayFeature direction = (DisplayFeature)getView().findViewById(R.id.direction);
-        direction.setValue(String.format("%.0f", skipper.direction));
+        direction.setValue(String.format("%.0f°", skipper.direction));
+
+        DisplayFeature windDirection = (DisplayFeature)getView().findViewById(R.id.wind_direction);
+        windDirection.setValue(String.format("%.0f°", skipper.windRelativeAngle));
+
+        DisplayFeature windSpeed = (DisplayFeature)getView().findViewById(R.id.wind_speed);
+        windSpeed.setValue(String.format("%.0f %s", skipper.windSpeed, getString(R.string.speed_unit)));
+
+        DisplayFeature finished = (DisplayFeature)getView().findViewById(R.id.finished);
+        DisplayFeature rank = (DisplayFeature)getView().findViewById(R.id.rank);
+        if (skipper.hasFinished()) {
+            finished.setValue(String.format(getString(R.string.skipper_finished_value), skipper.getFinished(currentContext)));
+            rank.setValue(String.format("%d", skipper.rank));
+            finished.setVisibility(View.VISIBLE);
+            rank.setVisibility(View.VISIBLE);
+        } else {
+            finished.setVisibility(View.INVISIBLE);
+            rank.setVisibility(View.INVISIBLE);
+        }
 
         Compass compass = (Compass)getView().findViewById(R.id.compass);
         compass.setAngle((float)skipper.direction);
 
     }
+
 }

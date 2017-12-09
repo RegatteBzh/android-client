@@ -9,8 +9,13 @@ import org.json.JSONObject;
 
 public class Sail {
     public String id;
+    public String name;
+    public Boat boat;
+
 
     public Sail(JSONObject data) throws JSONException {
         this.id = data.has("id") ? data.getString("id") : "";
+        name = data.has("name") ? data.getString("name") : "";
+        boat = data.has("allowedBoat") ? new Boat(data.getJSONObject("allowedBoat")) : null;
     }
 }

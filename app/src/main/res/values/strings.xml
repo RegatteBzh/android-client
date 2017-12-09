@@ -6,6 +6,8 @@
     <string name="facebook_app_id">169308756959219</string>
     <string name="fb_login_protocol_scheme">fb169308756959219</string>
 
+    <string name="google_maps_key">AIzaSyAc2SqYW7jXXUlMxETl66YcuCnJ1lOiAfs</string>
+
     <string name="dashboard_available_races_label">Available races</string>
     <string name="dashboard_skipper_races_label">Your races</string>
 
@@ -16,4 +18,10 @@
 
     <string name="skipper_speed_label">Speed:</string>
     <string name="skipper_direction_label">Direction:</string>
+    <string name="skipper_wind_direction_label">Wind dir. :</string>
+    <string name="skipper_wind_speed_label">Wind speed :</string>
+    <string name="skipper_finished_label">Finish</string>
+    <string name="skipper_finished_value">Finished(%s)</string>
+    <string name="skipper_rank_label">Rank</string>
+    <string name="speed_unit">knt</string>
 </resources>

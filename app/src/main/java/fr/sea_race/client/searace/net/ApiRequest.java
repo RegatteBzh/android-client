@@ -15,6 +15,7 @@ public class ApiRequest {
 
     public static String baseUrl = "https://sea-race.fr";
     private static String apiPrefix = "/api";
+    private static String assetsPrefix = "/assets";
     public static String token = "";
 
     public static void setToken(String authToken) {
@@ -31,8 +32,16 @@ public class ApiRequest {
         return newClient;
     }
 
+    public static AsyncHttpClient assets() {
+        return new AsyncHttpClient();
+    }
+
     public static String url(String path) {
         return baseUrl + apiPrefix + (path.charAt(0) == '/' ? "" : "/") + path;
+    }
+
+    public static String assets(String path) {
+        return baseUrl + assetsPrefix + (path.charAt(0) == '/' ? "" : "/") + path;
     }
 
     public static String url(String path, Map<String, String> query){

@@ -75,13 +75,11 @@ public class Compass extends View {
     private void drawCursor(Canvas canvas, float cursorAngle) {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.cursor);
         Matrix matrix = new Matrix();
-        matrix.postTranslate((float)(-bitmap.getWidth()/2), (float)(-bitmap.getHeight()));
+
+        matrix.postTranslate((float)(-bitmap.getWidth()/2), (float)(-bitmap.getHeight() - ray / bitmapRatio));
         matrix.postRotate(cursorAngle,0,0);
         matrix.postScale(bitmapRatio, bitmapRatio);
-
-        float x = (float)center.x + (float)ray * (float)Math.sin(Math.toRadians(cursorAngle));
-        float y = (float)center.y - (float)ray * (float)Math.cos(Math.toRadians(cursorAngle));
-        matrix.postTranslate(x, y);
+        matrix.postTranslate(center.x, center.y);
 
         canvas.drawBitmap(
                 bitmap,
