@@ -143,7 +143,7 @@ public class DashboardFragment extends Fragment {
         Map<String, String> query = new HashMap<String, String>();
         query.put("id", id);
         AsyncHttpClient client = ApiRequest.client();
-        client.get( ApiRequest.url("races/register/:id", query), new JsonHttpResponseHandler() {
+        client.post( ApiRequest.url("races/register/:id", query), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {

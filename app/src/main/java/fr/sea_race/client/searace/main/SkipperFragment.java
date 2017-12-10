@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 
 import fr.sea_race.client.searace.R;
@@ -23,6 +25,7 @@ import fr.sea_race.client.searace.component.DisplayFeature;
 import fr.sea_race.client.searace.component.OnCompassEventListener;
 import fr.sea_race.client.searace.model.Skipper;
 import fr.sea_race.client.searace.service.SkipperService;
+import fr.sea_race.client.searace.task.Poller;
 import fr.sea_race.client.searace.task.TaskReport;
 import fr.sea_race.client.searace.utils.CustomTileProvider;
 
@@ -37,6 +40,7 @@ public class SkipperFragment extends Fragment {
     private Skipper skipper;
     private GoogleMap mMap;
     private MapFragment mapFragment;
+    private Poller skipperPoller;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +75,21 @@ public class SkipperFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        loadSkipper();
+        manageCompass();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        skipperPoller.stop();
+    }
+
     public void setCustomTiles(GoogleMap map) {
         map.setMapType(GoogleMap.MAP_TYPE_NONE);
         CustomTileProvider mTileProvider = new CustomTileProvider();
@@ -81,14 +100,6 @@ public class SkipperFragment extends Fragment {
         );
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        loadSkipper();
-        manageCompass();
-    }
-
     private void manageCompass() {
         Compass compass = (Compass)getView().findViewById(R.id.compass);
         compass.setOnCompassEventListener(new OnCompassEventListener() {
@@ -97,6 +108,13 @@ public class SkipperFragment extends Fragment {
                 skipper.direction = angle;
                 DisplayFeature direction = (DisplayFeature)getView().findViewById(R.id.direction);
                 direction.setValue(String.format("%.2f", skipper.direction));
+                SkipperService.setBearing(skipper, angle, new TaskReport<Skipper> () {
+                    @Override
+                    public void onSuccess(Skipper mSkipper) {
+                        skipper = mSkipper;
+                        updateView();
+                    }
+                });
             }
 
             @Override
@@ -107,18 +125,29 @@ public class SkipperFragment extends Fragment {
     }
 
     private void loadSkipper() {
-        SkipperService.loadSkipper(skipperId, new TaskReport<Skipper>() {
-            @Override
-            public void onSuccess(Skipper mSkipper) {
-                skipper = mSkipper;
-                updateView();
-            }
+        Log.i("SKIPPER", "starting poller");
+        if (skipperPoller == null) {
+            Log.i("SKIPPER", "Creating poller");
+            skipperPoller = SkipperService.startPoller(skipperId, new TaskReport<Skipper>() {
+                @Override
+                public void onSuccess(Skipper mSkipper) {
+                    skipper = mSkipper;
+                    updateView();
+                }
 
-            @Override
-            public void onFailure(String reason) {
-                Toast.makeText(currentContext, getString(R.string.skipper_fail), Toast.LENGTH_LONG).show();
+                @Override
+                public void onFailure(String reason) {
+                    Toast.makeText(currentContext, getString(R.string.skipper_fail), Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            if (!skipperPoller.running) {
+                Log.i("SKIPPER", "restarting poller");
+                skipperPoller.start(0);
+            } else {
+                Log.i("SKIPPER", "poller already running");
             }
-        });
+        }
     }
 
     private void updateView() {
@@ -153,6 +182,9 @@ public class SkipperFragment extends Fragment {
         Compass compass = (Compass)getView().findViewById(R.id.compass);
         compass.setAngle((float)skipper.direction);
 
+        if (mMap != null) {
+            mMap.addMarker(new MarkerOptions().position(skipper.position));
+        }
     }
 
 }

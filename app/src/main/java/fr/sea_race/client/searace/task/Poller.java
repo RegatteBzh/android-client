@@ -1,6 +1,7 @@
 package fr.sea_race.client.searace.task;
 
 import android.os.Handler;
+import android.util.Log;
 
 /**
  * Created by cyrille on 10/12/17.
@@ -9,7 +10,7 @@ import android.os.Handler;
 public class Poller {
     private Handler mHandler;
     private Runnable mRunnable;
-    private boolean running = false;
+    public boolean running = false;
 
     public Poller(final int intervalMilliseconds, final int startMilliseconds, final TaskPoller task) {
         mRunnable = new Runnable() {
@@ -19,7 +20,7 @@ public class Poller {
                 mHandler.postDelayed(this,intervalMilliseconds);
             }
         };
-
+        mHandler = new Handler();
         start(startMilliseconds);
     }
 
@@ -33,6 +34,7 @@ public class Poller {
 
     public void start (int startMilliseconds) {
         if(mHandler != null && !running) {
+            Log.i("POLLER", "Will start in " + startMilliseconds);
             mHandler.postDelayed(mRunnable, startMilliseconds);
             running = true;
         }

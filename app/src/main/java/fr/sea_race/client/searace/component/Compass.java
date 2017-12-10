@@ -29,6 +29,7 @@ public class Compass extends View {
     private int ray;
     private Point center;
     private OnCompassEventListener mOnCompassEventListener;
+    private boolean isEditing = false;
 
     public Compass(final Context context, final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
@@ -57,6 +58,12 @@ public class Compass extends View {
     }
 
     public void setAngle(float angle) {
+        if (!isEditing) {
+            updateAngle(angle);
+        }
+    }
+
+    private void updateAngle(float angle) {
         this.angle = angle % 360;
         invalidate();
     }
@@ -91,7 +98,7 @@ public class Compass extends View {
     private void computeAngle(float x, float y) {
         double relativeX = x - center.x;
         double relativeY = y - center.y;
-        setAngle(360f + (float)Math.toDegrees(Math.atan2(relativeX, -relativeY)));
+        updateAngle(360f + (float)Math.toDegrees(Math.atan2(relativeX, -relativeY)));
     }
 
     @Override
@@ -101,6 +108,7 @@ public class Compass extends View {
             case MotionEvent.ACTION_DOWN:
                 if(mOnCompassEventListener != null)
                 {
+                    isEditing = true;
                     mOnCompassEventListener.OnStartAngle(angle);
                 }
                 return true;
@@ -111,6 +119,7 @@ public class Compass extends View {
                 if(mOnCompassEventListener != null)
                 {
                     mOnCompassEventListener.OnAngleUpdate(angle);
+                    isEditing = false;
                 }
                 return true;
         }
