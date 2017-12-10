@@ -1,4 +1,4 @@
-package fr.sea_race.client.searace.models.wind;
+package fr.sea_race.client.searace.model.wind;
 
 /**
  * Created by cyrille on 09/12/17.

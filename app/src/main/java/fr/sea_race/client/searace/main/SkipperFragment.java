@@ -4,36 +4,20 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import cz.msebera.android.httpclient.Header;
 import fr.sea_race.client.searace.R;
 import fr.sea_race.client.searace.component.Compass;
 import fr.sea_race.client.searace.component.DisplayFeature;
 import fr.sea_race.client.searace.component.OnCompassEventListener;
-import fr.sea_race.client.searace.models.Skipper;
-import fr.sea_race.client.searace.net.ApiRequest;
+import fr.sea_race.client.searace.model.Skipper;
+import fr.sea_race.client.searace.service.SkipperService;
+import fr.sea_race.client.searace.task.TaskReport;
 
 /**
  * Created by cmeichel on 12/5/17.
@@ -93,26 +77,16 @@ public class SkipperFragment extends Fragment {
     }
 
     private void loadSkipper() {
-        Map<String, String> query = new HashMap<String, String>();
-        query.put("id", skipperId);
-        AsyncHttpClient client = ApiRequest.client();
-        client.get( ApiRequest.url("skippers/:id/", query), new JsonHttpResponseHandler() {
+        SkipperService.loadSkipper(skipperId, new TaskReport<Skipper>() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    skipper = new Skipper(response);
-                    Log.i("Skipper data", skipper.id);
-                    updateView();
-                } catch (JSONException e) {
-                    Toast.makeText(currentContext, getString(R.string.skipper_fail), Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                }
+            public void onSuccess(Skipper mSkipper) {
+                skipper = mSkipper;
+                updateView();
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String text, Throwable throwable) {
+            public void onFailure(String reason) {
                 Toast.makeText(currentContext, getString(R.string.skipper_fail), Toast.LENGTH_LONG).show();
-                Log.i("HTTP ERROR", text);
             }
         });
     }

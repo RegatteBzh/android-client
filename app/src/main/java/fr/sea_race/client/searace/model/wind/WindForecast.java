@@ -1,8 +1,9 @@
-package fr.sea_race.client.searace.models.wind;
+package fr.sea_race.client.searace.model.wind;
 
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.Task;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -12,9 +13,9 @@ import org.json.JSONException;
 import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
-import fr.sea_race.client.searace.models.ForecastSkipper;
-import fr.sea_race.client.searace.models.Polar;
-import fr.sea_race.client.searace.models.Skipper;
+import fr.sea_race.client.searace.model.ForecastSkipper;
+import fr.sea_race.client.searace.model.Polar;
+import fr.sea_race.client.searace.model.Skipper;
 import fr.sea_race.client.searace.net.ApiRequest;
 import fr.sea_race.client.searace.utils.Trigo;
 
@@ -25,30 +26,11 @@ import fr.sea_race.client.searace.utils.Trigo;
 public class WindForecast {
 
     public Map<Integer, WindMap> data;
-    private static int stepHour = 6;
-    private static int stepCount = 4;
+    public static int stepHour = 6;
+    public static int stepCount = 4;
 
     public WindForecast() {
 
-    }
-
-    public void loadForecastWind(final int index) {
-        AsyncHttpClient client = ApiRequest.assets();
-        client.get( ApiRequest.assets(String.format("winds/wind%03d.json", index * stepHour)), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                try {
-                    data.put(index, new WindMap(response));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String text, Throwable throwable) {
-                Log.i("HTTP ERROR", text);
-            }
-        });
     }
 
     public WindSpeed getWindAt(LatLng position, int index) {

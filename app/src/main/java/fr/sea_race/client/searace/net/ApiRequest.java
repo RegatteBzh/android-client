@@ -15,7 +15,7 @@ public class ApiRequest {
 
     public static String baseUrl = "https://sea-race.fr";
     private static String apiPrefix = "/api";
-    private static String assetsPrefix = "/assets";
+    private static String assetsPrefix = "/data";
     public static String token = "";
 
     public static void setToken(String authToken) {

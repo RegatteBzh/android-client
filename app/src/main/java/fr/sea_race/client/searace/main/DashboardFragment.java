@@ -24,9 +24,11 @@ import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 import fr.sea_race.client.searace.R;
-import fr.sea_race.client.searace.models.Race;
-import fr.sea_race.client.searace.models.Skipper;
+import fr.sea_race.client.searace.model.Race;
+import fr.sea_race.client.searace.model.Skipper;
 import fr.sea_race.client.searace.net.ApiRequest;
+import fr.sea_race.client.searace.service.SkipperService;
+import fr.sea_race.client.searace.task.TaskReport;
 
 /**
  * Created by cyrille on 03/12/17.
@@ -95,40 +97,31 @@ public class DashboardFragment extends Fragment {
 
     public void loadSkippers (final View view, final Context context) {
 
-        AsyncHttpClient client = ApiRequest.client();
-        client.get( ApiRequest.url("skippers/"), new JsonHttpResponseHandler() {
+        SkipperService.loadSkippers(new TaskReport<List<Skipper>>() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                try {
-                    List<Skipper> skippers = Skipper.fromJsonArray(response);
-                    LinearLayout currentRaceLayout = (LinearLayout) view.findViewById(R.id.dashboard_skipper_races);
-                    currentRaceLayout.removeAllViews();
-                    for (int i=0; i<skippers.size(); i++) {
-                        Button button = new Button(context);
-                        button.setText(skippers.get(i).race.name);
-                        final String id = skippers.get(i).id;
-                        button.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                accessSkipper(v, id);
-                            }
-                        });
-                        currentRaceLayout.addView(button);
-                        Log.i("Current race", skippers.get(i).race.name);
-                    }
-                } catch (JSONException e) {
-                    Toast.makeText(currentContext, getString(R.string.http_fail), Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
+            public void onSuccess(List<Skipper> skippers) {
+                LinearLayout currentRaceLayout = (LinearLayout) view.findViewById(R.id.dashboard_skipper_races);
+                currentRaceLayout.removeAllViews();
+                for (int i=0; i<skippers.size(); i++) {
+                    Button button = new Button(context);
+                    button.setText(skippers.get(i).race.name);
+                    final String id = skippers.get(i).id;
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            accessSkipper(v, id);
+                        }
+                    });
+                    currentRaceLayout.addView(button);
+                    Log.i("Current race", skippers.get(i).race.name);
                 }
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String text, Throwable throwable) {
+            public void onFailure(String reason) {
                 Toast.makeText(currentContext, getString(R.string.http_fail), Toast.LENGTH_LONG).show();
-                Log.i("HTTP ERROR", text);
             }
         });
-
     }
 
     private void accessSkipper(View v, String id) {

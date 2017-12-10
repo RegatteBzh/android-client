@@ -1,4 +1,4 @@
-package fr.sea_race.client.searace.models;
+package fr.sea_race.client.searace.model;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -19,21 +19,21 @@ public class ForecastSkipper {
 
 
     public double getFirstSpeed () throws Exception {
-        if (this.speed.size() == 0) {
+        if (this.speed == null || this.speed.size() == 0) {
             throw new Exception("Empty forecast");
         }
         return this.speed.get(0);
     }
 
     public LatLng getLastPosition () throws Exception {
-        if (this.way.size() == 0) {
+        if (this.way== null || this.way.size() == 0) {
             throw new Exception("Empty forecast");
         }
         return this.way.get(this.way.size()-1);
     }
 
     public double getFirstWindDirection () throws Exception {
-        if (this.windRelativeBearings.size() == 0) {
+        if (this.windRelativeBearings == null || this.windRelativeBearings.size() == 0) {
             throw new Exception("Empty forecast");
         }
         return this.windRelativeBearings.get(0);

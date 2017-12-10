@@ -1,4 +1,4 @@
-package fr.sea_race.client.searace.models;
+package fr.sea_race.client.searace.model;
 
 import org.json.JSONArray;
 import org.json.JSONException;

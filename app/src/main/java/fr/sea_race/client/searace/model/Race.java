@@ -1,4 +1,4 @@
-package fr.sea_race.client.searace.models;
+package fr.sea_race.client.searace.model;
 
 import com.google.android.gms.maps.model.LatLng;
 

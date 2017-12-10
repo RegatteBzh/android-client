@@ -1,4 +1,4 @@
-package fr.sea_race.client.searace.models.wind;
+package fr.sea_race.client.searace.model.wind;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -14,6 +14,7 @@ import java.util.List;
 
 public class WindMap {
     private List<WindAxis> data;
+    public int index;
 
     public WindMap(JSONArray data) throws JSONException {
         this.data = new ArrayList<WindAxis>();
