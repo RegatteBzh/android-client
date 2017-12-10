@@ -1,6 +1,7 @@
 package fr.sea_race.client.searace.main;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,7 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.TileOverlayOptions;
 
 import fr.sea_race.client.searace.R;
 import fr.sea_race.client.searace.component.Compass;
@@ -18,6 +24,7 @@ import fr.sea_race.client.searace.component.OnCompassEventListener;
 import fr.sea_race.client.searace.model.Skipper;
 import fr.sea_race.client.searace.service.SkipperService;
 import fr.sea_race.client.searace.task.TaskReport;
+import fr.sea_race.client.searace.utils.CustomTileProvider;
 
 /**
  * Created by cmeichel on 12/5/17.
@@ -29,6 +36,7 @@ public class SkipperFragment extends Fragment {
     private String skipperId;
     private Skipper skipper;
     private GoogleMap mMap;
+    private MapFragment mapFragment;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,7 +56,29 @@ public class SkipperFragment extends Fragment {
 
         currentContext = rootView.getContext();
 
+        FragmentManager fm = getChildFragmentManager();
+        mapFragment =  MapFragment.newInstance();
+        fm.beginTransaction().replace(R.id.map_container, mapFragment).commit();
+
+        mapFragment.getMapAsync(new OnMapReadyCallback () {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                mMap = googleMap;
+                setCustomTiles(mMap);
+            }
+        });
+
         return rootView;
+    }
+
+    public void setCustomTiles(GoogleMap map) {
+        map.setMapType(GoogleMap.MAP_TYPE_NONE);
+        CustomTileProvider mTileProvider = new CustomTileProvider();
+        map.addTileOverlay(
+                new TileOverlayOptions()
+                        .tileProvider(mTileProvider)
+                        .zIndex(-1)
+        );
     }
 
     @Override

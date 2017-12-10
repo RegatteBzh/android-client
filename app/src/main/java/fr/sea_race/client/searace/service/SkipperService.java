@@ -22,6 +22,8 @@ import cz.msebera.android.httpclient.Header;
 import fr.sea_race.client.searace.R;
 import fr.sea_race.client.searace.model.Skipper;
 import fr.sea_race.client.searace.net.ApiRequest;
+import fr.sea_race.client.searace.task.Poller;
+import fr.sea_race.client.searace.task.TaskPoller;
 import fr.sea_race.client.searace.task.TaskReport;
 
 /**
@@ -81,6 +83,15 @@ public class SkipperService {
                 task.onComplete();
             }
         });
-
     }
+
+    public static Poller startPoller(final String skipperId, final TaskReport<Skipper> task) {
+        return new Poller(3000, 0, new TaskPoller() {
+            @Override
+            public void tick() {
+                loadSkipper(skipperId, task);
+            }
+        });
+    }
+
 }
