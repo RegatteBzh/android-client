@@ -9,6 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import fr.sea_race.client.searace.R;
+import fr.sea_race.client.searace.model.Sail;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        Sail.loadTranslations(this);
 
         DashboardFragment fragment = new DashboardFragment();
 

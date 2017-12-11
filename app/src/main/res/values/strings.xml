@@ -26,4 +26,13 @@
     <string name="skipper_rank_label">Rank</string>
     <string name="speed_unit">knt</string>
     <string name="skipper_sail_label">Sail :</string>
+
+
+    <string name="sail_label_foc">Foc</string>
+    <string name="sail_label_spi">Spi</string>
+    <string name="sail_label_foc2">Foc2</string>
+    <string name="sail_label_genois">Génois</string>
+    <string name="sail_label_code_zero">Code zéro</string>
+    <string name="sail_label_spi_leger">Spi léger</string>
+    <string name="sail_label_gennaker">Gennaker</string>
 </resources>

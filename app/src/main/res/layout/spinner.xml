@@ -4,4 +4,5 @@
     android:layout_height="wrap_content"
     android:padding="10dp"
     android:textAppearance="@style/AppTheme.spinner"
+    android:background="@color/globalBg"
     android:spinnerMode="dialog" />

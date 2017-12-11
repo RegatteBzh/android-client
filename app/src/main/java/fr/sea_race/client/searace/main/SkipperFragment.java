@@ -24,6 +24,7 @@ import fr.sea_race.client.searace.component.Compass;
 import fr.sea_race.client.searace.component.DisplaySails;
 import fr.sea_race.client.searace.component.DisplayFeature;
 import fr.sea_race.client.searace.component.OnCompassEventListener;
+import fr.sea_race.client.searace.component.OnSailChangeListener;
 import fr.sea_race.client.searace.model.Sail;
 import fr.sea_race.client.searace.model.Skipper;
 import fr.sea_race.client.searace.service.SailService;
@@ -85,6 +86,7 @@ public class SkipperFragment extends Fragment {
 
         loadSkipper();
         manageCompass();
+        manageSails();
     }
 
     @Override
@@ -102,6 +104,22 @@ public class SkipperFragment extends Fragment {
                         .tileProvider(mTileProvider)
                         .zIndex(-1)
         );
+    }
+
+    private void manageSails() {
+        DisplaySails sailSelector = (DisplaySails)getView().findViewById(R.id.sail);
+        sailSelector.setOnChangeListener(new OnSailChangeListener() {
+            @Override
+            public void onChange(Sail sail) {
+                SailService.setSail(skipper, sail, new TaskReport<Skipper>() {
+                    @Override
+                    public void onSuccess(Skipper mSkipper) {
+                        skipper = mSkipper;
+                        updateView();
+                    }
+                });
+            }
+        });
     }
 
     private void manageCompass() {
@@ -210,7 +228,12 @@ public class SkipperFragment extends Fragment {
 
         if (sails != null) {
             DisplaySails sailSelector = (DisplaySails)getView().findViewById(R.id.sail);
-            sailSelector.setSails(sails);
+            if (sailSelector.getSails().size() == 0) {
+                sailSelector.setSails(sails);
+            }
+            if (skipper != null) {
+                sailSelector.setValue(skipper.sail);
+            }
         }
     }
 
