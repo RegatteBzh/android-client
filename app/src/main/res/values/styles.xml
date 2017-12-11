@@ -32,6 +32,10 @@
         <item name="android:textSize">20dp</item>
     </style>
 
+    <style name="AppTheme.spinner" parent="AppTheme.anyText">
+        <item name="android:textSize">14dp</item>
+    </style>
+
     <style name="AppTheme.label" parent="AppTheme.anyText">
         <item name="android:paddingRight">8dp</item>
         <item name="android:textSize">14dp</item>

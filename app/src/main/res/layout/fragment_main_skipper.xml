@@ -64,6 +64,13 @@
                 android:layout_height="wrap_content"
                 custom:label="@string/skipper_wind_speed_label" />
 
+            <!-- SAIL -->
+            <fr.sea_race.client.searace.component.DisplaySails
+                android:id="@+id/sail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                custom:label="@string/skipper_sail_label" />
+
             <!-- FINISHED -->
             <fr.sea_race.client.searace.component.DisplayFeature
                 android:id="@+id/finished"

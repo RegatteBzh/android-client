@@ -13,7 +13,8 @@
 
     <string name="login_fail">Login failed. Try again</string>
     <string name="http_fail">Server error</string>
-    <string name="skipper_fail">Server error</string>
+    <string name="skipper_fail">Server error (skipper)</string>
+    <string name="sail_fail">Server error (sail)</string>
     <string name="login_missing_token">Oh no! Google did not deliver a token</string>
 
     <string name="skipper_speed_label">Speed:</string>
@@ -24,4 +25,5 @@
     <string name="skipper_finished_value">Finished(%s)</string>
     <string name="skipper_rank_label">Rank</string>
     <string name="speed_unit">knt</string>
+    <string name="skipper_sail_label">Sail :</string>
 </resources>

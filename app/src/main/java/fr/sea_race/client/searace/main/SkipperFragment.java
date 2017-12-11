@@ -11,19 +11,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 
+import java.util.List;
+
 import fr.sea_race.client.searace.R;
 import fr.sea_race.client.searace.component.Compass;
+import fr.sea_race.client.searace.component.DisplaySails;
 import fr.sea_race.client.searace.component.DisplayFeature;
 import fr.sea_race.client.searace.component.OnCompassEventListener;
+import fr.sea_race.client.searace.model.Sail;
 import fr.sea_race.client.searace.model.Skipper;
+import fr.sea_race.client.searace.service.SailService;
 import fr.sea_race.client.searace.service.SkipperService;
 import fr.sea_race.client.searace.task.Poller;
 import fr.sea_race.client.searace.task.TaskReport;
@@ -38,6 +41,7 @@ public class SkipperFragment extends Fragment {
     private Context currentContext;
     private String skipperId;
     private Skipper skipper;
+    private List<Sail> sails;
     private GoogleMap mMap;
     private MapFragment mapFragment;
     private Poller skipperPoller;
@@ -132,6 +136,9 @@ public class SkipperFragment extends Fragment {
                 @Override
                 public void onSuccess(Skipper mSkipper) {
                     skipper = mSkipper;
+                    if (sails == null || sails.isEmpty()) {
+                        loadSails();
+                    }
                     updateView();
                 }
 
@@ -148,6 +155,21 @@ public class SkipperFragment extends Fragment {
                 Log.i("SKIPPER", "poller already running");
             }
         }
+    }
+
+    private void loadSails () {
+        SailService.loadSails(skipper.boat, new TaskReport<List<Sail>>() {
+            @Override
+            public void onSuccess(List<Sail> sailList) {
+                sails = sailList;
+                updateView();
+            }
+
+            @Override
+            public void onFailure(String reason) {
+                Toast.makeText(currentContext, getString(R.string.sail_fail), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void updateView() {
@@ -184,6 +206,11 @@ public class SkipperFragment extends Fragment {
 
         if (mMap != null) {
             mMap.addMarker(new MarkerOptions().position(skipper.position));
+        }
+
+        if (sails != null) {
+            DisplaySails sailSelector = (DisplaySails)getView().findViewById(R.id.sail);
+            sailSelector.setSails(sails);
         }
     }
 
