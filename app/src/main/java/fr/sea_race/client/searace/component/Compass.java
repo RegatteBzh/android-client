@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -55,6 +56,10 @@ public class Compass extends View {
         loadBackground(canvas);
 
         drawCursor(canvas, angle);
+
+        if (isEditing) {
+            drawText(canvas, String.format("%.0f", angle));
+        }
     }
 
     public void setAngle(float angle) {
@@ -75,7 +80,7 @@ public class Compass extends View {
                 bitmap,
                 new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight()),
                 getRect(bitmap),
-                null
+                new Paint()
         );
     }
 
@@ -93,6 +98,14 @@ public class Compass extends View {
                 matrix,
                 new Paint()
         );
+    }
+
+    private void drawText(Canvas canvas, String text) {
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(70);
+        paint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText(text, center.x, center.y - ((paint.descent() + paint.ascent()) / 2), paint);
     }
 
     private void computeAngle(float x, float y) {

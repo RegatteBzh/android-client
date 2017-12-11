@@ -4,7 +4,7 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#151B23"
+    android:background="@color/globalBg"
     android:baselineAligned="false"
     android:weightSum="100">
 

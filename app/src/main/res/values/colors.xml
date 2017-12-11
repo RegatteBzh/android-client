@@ -6,4 +6,6 @@
 
     <color name="facebookBg">#4B62A6</color>
     <color name="facebookFg">#ffffff</color>
+
+    <color name="globalBg">#151B23</color>
 </resources>
