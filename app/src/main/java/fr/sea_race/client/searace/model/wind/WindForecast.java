@@ -10,6 +10,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
@@ -25,7 +26,7 @@ import fr.sea_race.client.searace.utils.Trigo;
 
 public class WindForecast {
 
-    public Map<Integer, WindMap> data;
+    public Map<Integer, WindMap> data = new HashMap<Integer, WindMap>();
     public static int stepHour = 6;
     public static int stepCount = 4;
 

@@ -35,4 +35,6 @@
     <string name="sail_label_code_zero">Code zéro</string>
     <string name="sail_label_spi_leger">Spi léger</string>
     <string name="sail_label_gennaker">Gennaker</string>
+    <string name="wind_fail">Server error (wind)</string>
+    <string name="polar_fail">Server error (polar)</string>
 </resources>

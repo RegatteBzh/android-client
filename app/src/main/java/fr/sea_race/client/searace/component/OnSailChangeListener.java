@@ -7,5 +7,9 @@ import fr.sea_race.client.searace.model.Sail;
  */
 
 public interface OnSailChangeListener {
+    /**
+     * Event thrown when sail has changed
+     * @param sail New Sail
+     */
     public void onChange(Sail sail);
 }

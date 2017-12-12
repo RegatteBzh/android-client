@@ -33,10 +33,13 @@ import fr.sea_race.client.searace.component.DisplaySails;
 import fr.sea_race.client.searace.component.DisplayFeature;
 import fr.sea_race.client.searace.component.OnCompassEventListener;
 import fr.sea_race.client.searace.component.OnSailChangeListener;
+import fr.sea_race.client.searace.model.Polar;
 import fr.sea_race.client.searace.model.Sail;
 import fr.sea_race.client.searace.model.Skipper;
+import fr.sea_race.client.searace.model.wind.WindForecast;
 import fr.sea_race.client.searace.service.SailService;
 import fr.sea_race.client.searace.service.SkipperService;
+import fr.sea_race.client.searace.service.WindService;
 import fr.sea_race.client.searace.task.Poller;
 import fr.sea_race.client.searace.task.TaskReport;
 import fr.sea_race.client.searace.utils.CustomTileProvider;
@@ -55,7 +58,9 @@ public class SkipperFragment extends Fragment {
     private MapFragment mapFragment;
     private Poller skipperPoller;
     private Marker boatMarker;
+    private WindForecast windForecast;
     private boolean isCompassRunning = false;
+    private Polar polar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,6 +101,9 @@ public class SkipperFragment extends Fragment {
         super.onResume();
 
         loadSkipper();
+        loadWinds();
+
+
         manageCompass();
         manageSails();
     }
@@ -107,7 +115,7 @@ public class SkipperFragment extends Fragment {
         skipperPoller.stop();
     }
 
-    public void setCustomTiles(GoogleMap map) {
+    private void setCustomTiles(GoogleMap map) {
         map.setMapType(GoogleMap.MAP_TYPE_NONE);
         CustomTileProvider mTileProvider = new CustomTileProvider();
         map.addTileOverlay(
@@ -136,6 +144,10 @@ public class SkipperFragment extends Fragment {
         return bmp;
     }
 
+    private void estimateSpeed(float angle, LatLng position) {
+
+    }
+
     private void addBoatMarker(GoogleMap map) {
         boatMarker = map.addMarker(new MarkerOptions()
                 .icon(BitmapDescriptorFactory.fromBitmap(createBoatIcon(0)))
@@ -153,6 +165,7 @@ public class SkipperFragment extends Fragment {
                     @Override
                     public void onSuccess(Skipper mSkipper) {
                         skipper = mSkipper;
+                        loadPolars();
                         updateView();
                     }
                 });
@@ -195,6 +208,9 @@ public class SkipperFragment extends Fragment {
                 if (boatMarker != null) {
                     boatMarker.setIcon(BitmapDescriptorFactory.fromBitmap(createBoatIcon(angle)));
                 }
+                if (skipper != null) {
+                    estimateSpeed(angle, skipper.position);
+                }
             }
         });
     }
@@ -210,6 +226,7 @@ public class SkipperFragment extends Fragment {
                     if (sails == null || sails.isEmpty()) {
                         loadSails();
                     }
+                    loadPolars();
                     updateView();
                 }
 
@@ -239,6 +256,35 @@ public class SkipperFragment extends Fragment {
             @Override
             public void onFailure(String reason) {
                 Toast.makeText(currentContext, getString(R.string.sail_fail), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void loadWinds () {
+        Log.i("WINDS", "Load winds");
+        WindService.loadAllForecast(new TaskReport<WindForecast>() {
+            @Override
+            public void onSuccess(WindForecast forecast) {
+                windForecast = forecast;
+            }
+
+            @Override
+            public void onFailure(String reason) {
+                Toast.makeText(currentContext, getString(R.string.wind_fail), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void loadPolars () {
+        SailService.loadPolar(skipper.sail, new TaskReport<Polar>() {
+            @Override
+            public void onSuccess(Polar newPolar) {
+                polar = newPolar;
+            }
+
+            @Override
+            public void onFailure(String reason) {
+                Toast.makeText(currentContext, getString(R.string.polar_fail), Toast.LENGTH_LONG).show();
             }
         });
     }

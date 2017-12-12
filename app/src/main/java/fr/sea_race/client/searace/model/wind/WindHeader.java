@@ -3,6 +3,8 @@ package fr.sea_race.client.searace.model.wind;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -38,6 +40,17 @@ public class WindHeader {
 
         this.parameterNumberName = data.has("parameterNumberName") ? data.getString("parameterNumberName") : "";
         this.parameterUnit = data.has("parameterUnit") ? data.getString("parameterUnit") : "";
-        this.refTime = data.has("refTime") ? new Date(data.getInt("refTime") * 1000) : new Date();
+
+        if (data.has("refTime")) {
+            String timeStr = data.getString("refTime");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            try {
+                this.refTime = format.parse(timeStr.trim());
+            } catch (ParseException e) {
+                this.refTime = new Date();
+            }
+        } else {
+            this.refTime = new Date();
+        }
     }
 }

@@ -3,6 +3,7 @@ package fr.sea_race.client.searace.model;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.sea_race.client.searace.utils.Trigo;
@@ -12,7 +13,7 @@ import fr.sea_race.client.searace.utils.Trigo;
  */
 
 public class Polar {
-    private List<double[]> data;
+    private List<double[]> data = new ArrayList<double[]>();
 
     public  Polar(JSONArray data) throws JSONException {
         for (int i = 0; i< data.length(); i++) {
