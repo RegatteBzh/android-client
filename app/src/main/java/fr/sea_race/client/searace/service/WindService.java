@@ -23,9 +23,13 @@ import fr.sea_race.client.searace.task.TaskReport;
 
 public class WindService {
 
+    private static String precision = "1.0";
+
     public static void loadWindMap(final int index, final TaskReport<WindMap> task) {
         AsyncHttpClient client = ApiRequest.assets();
-        client.get( ApiRequest.assets(String.format("winds/wind%03d.json", index * WindForecast.stepHour)), new JsonHttpResponseHandler() {
+        String filename = ApiRequest.assets(String.format("winds/%s/wind%03d.json", precision, index * WindForecast.stepHour));
+        Log.i("WIND", filename);
+        client.get( filename, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 try {
