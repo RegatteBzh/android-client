@@ -5,6 +5,7 @@ package fr.sea_race.client.searace.component;
  */
 
 public interface OnCompassEventListener {
-    public void OnAngleUpdate(float angle);
-    public void OnStartAngle(float angle);
+    public void onAngleUpdate(float angle);
+    public void onStartAngle(float angle);
+    public void onProcessAngle(float angle);
 }

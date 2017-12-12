@@ -3,6 +3,11 @@ package fr.sea_race.client.searace.main;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -14,6 +19,9 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 
@@ -46,6 +54,8 @@ public class SkipperFragment extends Fragment {
     private GoogleMap mMap;
     private MapFragment mapFragment;
     private Poller skipperPoller;
+    private Marker boatMarker;
+    private boolean isCompassRunning = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,6 +84,7 @@ public class SkipperFragment extends Fragment {
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
                 setCustomTiles(mMap);
+                addBoatMarker(mMap);
             }
         });
 
@@ -106,6 +117,33 @@ public class SkipperFragment extends Fragment {
         );
     }
 
+    private Bitmap createBoatIcon(double angle) {
+        Bitmap icon = BitmapFactory.decodeResource(getResources(),
+                R.drawable.boat_marker);
+
+        float ratio = (float)80 / (float)icon.getHeight();
+        Bitmap bmp = Bitmap.createBitmap((int)((float)icon.getHeight() * ratio), (int)((float)icon.getHeight() * ratio), Bitmap.Config.ARGB_8888);
+        int shift = icon.getHeight() / 2 - icon.getWidth() / 2;
+        Canvas canvas = new Canvas(bmp);
+
+        Matrix matrix = new Matrix();
+        matrix.postTranslate(-(float)icon.getWidth()/2, -(float)icon.getHeight()/2);
+        matrix.postRotate((float)angle);
+        matrix.postTranslate((float)icon.getWidth()/2 + shift, (float)icon.getHeight()/2);
+        matrix.postScale(ratio, ratio);
+
+        canvas.drawBitmap(icon, matrix, new Paint());
+        return bmp;
+    }
+
+    private void addBoatMarker(GoogleMap map) {
+        boatMarker = map.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromBitmap(createBoatIcon(0)))
+                .anchor(0.5f, 0.5f)
+                .position(new LatLng(0, 0))
+        );
+    }
+
     private void manageSails() {
         DisplaySails sailSelector = (DisplaySails)getView().findViewById(R.id.sail);
         sailSelector.setOnChangeListener(new OnSailChangeListener() {
@@ -126,7 +164,7 @@ public class SkipperFragment extends Fragment {
         Compass compass = (Compass)getView().findViewById(R.id.compass);
         compass.setOnCompassEventListener(new OnCompassEventListener() {
             @Override
-            public void OnAngleUpdate(float angle) {
+            public void onAngleUpdate(float angle) {
                 skipper.direction = angle;
                 DisplayFeature direction = (DisplayFeature)getView().findViewById(R.id.direction);
                 direction.setValue(String.format("%.2f", skipper.direction));
@@ -136,12 +174,27 @@ public class SkipperFragment extends Fragment {
                         skipper = mSkipper;
                         updateView();
                     }
+
+                    @Override
+                    public void onComplete() {
+                        isCompassRunning = false;
+                    }
                 });
+                if (boatMarker != null) {
+                    boatMarker.setIcon(BitmapDescriptorFactory.fromBitmap(createBoatIcon(angle)));
+                }
             }
 
             @Override
-            public void OnStartAngle(float angle) {
+            public void onStartAngle(float angle) {
+                isCompassRunning = true;
+            }
 
+            @Override
+            public void onProcessAngle(float angle) {
+                if (boatMarker != null) {
+                    boatMarker.setIcon(BitmapDescriptorFactory.fromBitmap(createBoatIcon(angle)));
+                }
             }
         });
     }
@@ -191,39 +244,43 @@ public class SkipperFragment extends Fragment {
     }
 
     private void updateView() {
-        DisplayFeature speed = (DisplayFeature)getView().findViewById(R.id.speed);
-        if (skipper.isSpeedValid()) {
-            speed.setValue(String.format("%.2f %s", skipper.speed, getString(R.string.speed_unit)));
-        } else {
-            speed.setValue("--");
-        }
+        if (skipper != null && !isCompassRunning) {
+            DisplayFeature speed = (DisplayFeature)getView().findViewById(R.id.speed);
+            if (skipper.isSpeedValid()) {
+                speed.setValue(String.format("%.2f %s", skipper.speed, getString(R.string.speed_unit)));
+            } else {
+                speed.setValue("--");
+            }
 
-        DisplayFeature direction = (DisplayFeature)getView().findViewById(R.id.direction);
-        direction.setValue(String.format("%.0f°", skipper.direction));
+            DisplayFeature direction = (DisplayFeature)getView().findViewById(R.id.direction);
+            direction.setValue(String.format("%.0f°", skipper.direction));
 
-        DisplayFeature windDirection = (DisplayFeature)getView().findViewById(R.id.wind_direction);
-        windDirection.setValue(String.format("%.0f°", skipper.windRelativeAngle));
+            DisplayFeature windDirection = (DisplayFeature)getView().findViewById(R.id.wind_direction);
+            windDirection.setValue(String.format("%.0f°", skipper.windRelativeAngle));
 
-        DisplayFeature windSpeed = (DisplayFeature)getView().findViewById(R.id.wind_speed);
-        windSpeed.setValue(String.format("%.0f %s", skipper.windSpeed, getString(R.string.speed_unit)));
+            DisplayFeature windSpeed = (DisplayFeature)getView().findViewById(R.id.wind_speed);
+            windSpeed.setValue(String.format("%.0f %s", skipper.windSpeed, getString(R.string.speed_unit)));
 
-        DisplayFeature finished = (DisplayFeature)getView().findViewById(R.id.finished);
-        DisplayFeature rank = (DisplayFeature)getView().findViewById(R.id.rank);
-        if (skipper.hasFinished()) {
-            finished.setValue(String.format(getString(R.string.skipper_finished_value), skipper.getFinished(currentContext)));
-            rank.setValue(String.format("%d", skipper.rank));
-            finished.setVisibility(View.VISIBLE);
-            rank.setVisibility(View.VISIBLE);
-        } else {
-            finished.setVisibility(View.INVISIBLE);
-            rank.setVisibility(View.INVISIBLE);
-        }
+            DisplayFeature finished = (DisplayFeature)getView().findViewById(R.id.finished);
+            DisplayFeature rank = (DisplayFeature)getView().findViewById(R.id.rank);
+            if (skipper.hasFinished()) {
+                finished.setValue(String.format(getString(R.string.skipper_finished_value), skipper.getFinished(currentContext)));
+                rank.setValue(String.format("%d", skipper.rank));
+                finished.setVisibility(View.VISIBLE);
+                rank.setVisibility(View.VISIBLE);
+            } else {
+                finished.setVisibility(View.INVISIBLE);
+                rank.setVisibility(View.INVISIBLE);
+            }
 
-        Compass compass = (Compass)getView().findViewById(R.id.compass);
-        compass.setAngle((float)skipper.direction);
+            Compass compass = (Compass)getView().findViewById(R.id.compass);
+            compass.setAngle((float)skipper.direction);
 
-        if (mMap != null) {
-            mMap.addMarker(new MarkerOptions().position(skipper.position));
+            if (boatMarker != null) {
+                boatMarker.setPosition(skipper.position);
+                boatMarker.setIcon(BitmapDescriptorFactory.fromBitmap(createBoatIcon(skipper.direction)));
+            }
+
         }
 
         if (sails != null) {

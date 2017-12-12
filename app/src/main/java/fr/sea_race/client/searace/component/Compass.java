@@ -108,10 +108,12 @@ public class Compass extends View {
         canvas.drawText(text, center.x, center.y - ((paint.descent() + paint.ascent()) / 2), paint);
     }
 
-    private void computeAngle(float x, float y) {
+    private float computeAngle(float x, float y) {
         double relativeX = x - center.x;
         double relativeY = y - center.y;
-        updateAngle(360f + (float)Math.toDegrees(Math.atan2(relativeX, -relativeY)));
+        float newAngle = 360f + (float)Math.toDegrees(Math.atan2(relativeX, -relativeY));
+        updateAngle(newAngle);
+        return newAngle;
     }
 
     @Override
@@ -122,16 +124,20 @@ public class Compass extends View {
                 if(mOnCompassEventListener != null)
                 {
                     isEditing = true;
-                    mOnCompassEventListener.OnStartAngle(angle);
+                    mOnCompassEventListener.onStartAngle(angle);
                 }
                 return true;
             case MotionEvent.ACTION_MOVE:
-                computeAngle(motionEvent.getX(), motionEvent.getY());
+                float newAngle = computeAngle(motionEvent.getX(), motionEvent.getY());
+                if(mOnCompassEventListener != null)
+                {
+                    mOnCompassEventListener.onProcessAngle(angle);
+                }
                 return true;
             case MotionEvent.ACTION_UP:
                 if(mOnCompassEventListener != null)
                 {
-                    mOnCompassEventListener.OnAngleUpdate(angle);
+                    mOnCompassEventListener.onAngleUpdate(angle);
                     isEditing = false;
                 }
                 return true;
