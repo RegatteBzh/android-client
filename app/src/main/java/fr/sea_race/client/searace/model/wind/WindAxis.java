@@ -15,24 +15,24 @@ import java.util.List;
 
 public class WindAxis {
 
-    public List<Double> data;
+    public float data[][];
     public WindHeader header;
 
     public WindAxis(JSONObject data) throws JSONException {
         this.header = data.has("header") ? new WindHeader(data.getJSONObject("header")) : null;
+        this.data = new float[this.header.nx][this.header.ny];
+
         if (data.has("data")) {
-            this.data = new ArrayList<Double>();
             JSONArray dataLst = data.getJSONArray("data");
             for (int i=0; i<dataLst.length(); i++) {
-                double elt = dataLst.getDouble(i);
-                this.data.add(elt);
+                this.data[i % this.header.nx][i / this.header.nx] = (float)dataLst.getDouble(i);
             }
         }
     }
 
-    public double getWindAt(LatLng position) {
+    public float getWindAt(LatLng position) {
         int x = (int)Math.round(((position.longitude + 360) % 360) / this.header.dx);
         int y = (int)Math.round((this.header.la1 - position.latitude) / this.header.dy);
-        return  this.data.get(y * this.header.nx + x);
+        return this.data[x][y];
     }
 }
