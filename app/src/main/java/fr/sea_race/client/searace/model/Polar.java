@@ -14,8 +14,10 @@ import fr.sea_race.client.searace.utils.Trigo;
 
 public class Polar {
     private List<double[]> data = new ArrayList<double[]>();
+    public Sail sail;
 
-    public  Polar(JSONArray data) throws JSONException {
+    public  Polar(Sail sail, JSONArray data) throws JSONException {
+        this.sail = sail;
         for (int i = 0; i< data.length(); i++) {
             JSONArray jsonLine = data.getJSONArray(i);
             double line[] = new double[jsonLine.length()];

@@ -168,6 +168,11 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(currentContext, getString(R.string.login_fail), Toast.LENGTH_LONG).show();
                         Log.i("HTTP ERROR", text);
                     }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject data) {
+                        Toast.makeText(currentContext, getString(R.string.login_fail), Toast.LENGTH_LONG).show();
+                    }
                 });
             } catch (JSONException e) {
                 Toast.makeText(currentContext, getString(R.string.login_fail), Toast.LENGTH_LONG).show();

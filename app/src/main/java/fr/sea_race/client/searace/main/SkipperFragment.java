@@ -276,6 +276,11 @@ public class SkipperFragment extends Fragment {
     }
 
     private void loadPolars () {
+        if (polar != null) {
+            if (polar.sail.equals(skipper.sail)) {
+                return;
+            }
+        }
         SailService.loadPolar(skipper.sail, new TaskReport<Polar>() {
             @Override
             public void onSuccess(Polar newPolar) {

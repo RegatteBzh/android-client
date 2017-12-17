@@ -31,13 +31,13 @@ import fr.sea_race.client.searace.task.TaskReport;
  */
 
 public class SailService {
-    public static void loadPolar(Sail sail, final TaskReport<Polar> task) {
+    public static void loadPolar(final Sail sail, final TaskReport<Polar> task) {
         AsyncHttpClient client = ApiRequest.assets();
         client.get( ApiRequest.assets(String.format("polars/%s.json", sail.id)), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 try {
-                    task.onSuccess(new Polar(response));
+                    task.onSuccess(new Polar(sail, response));
                 } catch (JSONException e) {
                     e.printStackTrace();
                     task.onFailure("bad json");
