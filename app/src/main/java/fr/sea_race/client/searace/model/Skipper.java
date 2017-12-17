@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import fr.sea_race.client.searace.model.wind.WindMap;
+import fr.sea_race.client.searace.model.wind.WindSpeed;
+
 
 /**
  * Created by cyrille on 03/12/17.
@@ -91,11 +94,25 @@ public class Skipper {
         return result;
     }
 
-    public double getRelativeAngle(double bearing) {
-        double angle = (bearing - this.direction + 360) % 360;
+    public double getRelativeAngle(double boatAngle, double bearing) {
+        double angle = (bearing - boatAngle + 360) % 360;
         if (angle < 180) {
             return 180 - angle;
         }
         return angle - 180;
+    }
+
+    public double getRelativeAngle(double bearing) {
+        return getRelativeAngle(this.direction, bearing);
+    }
+
+    public double forecastSpeed(double boatAngle, WindMap wind, Polar polar) {
+        WindSpeed speed = wind.getWindAt(this.position);
+        double windDirection = getRelativeAngle(boatAngle, speed.bearing());
+        return speed.valueKnot() * polar.getSpeedCoefAt(speed.valueKnot(), windDirection);
+    }
+
+    public double forecastSpeed (WindMap wind, Polar polar) {
+        return forecastSpeed(this.direction, wind, polar);
     }
 }

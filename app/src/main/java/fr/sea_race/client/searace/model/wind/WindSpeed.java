@@ -13,8 +13,12 @@ public class WindSpeed {
         this.v = v;
     }
 
-    public double value () {
+    public double valueMeterPerSecond () {
         return Math.sqrt(Math.pow(this.u, 2) + Math.pow(this.u, 2));
+    }
+
+    public double valueKnot () {
+        return valueMeterPerSecond() * 1.9438444924574;
     }
 
     public double bearing() {

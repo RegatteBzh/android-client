@@ -46,17 +46,17 @@ public class WindForecast {
         result.way.add(skipper.position);
         for (int i = 0; i < this.stepCount; i++) {
         LatLng lastPos = result.getLastPosition();
-        WindSpeed windSpeedKnot = this.getWindAt(lastPos, i);
+        WindSpeed windSpeed = this.getWindAt(lastPos, i);
 
-        double relativeWindBearing = skipper.getRelativeAngle(windSpeedKnot.bearing());
+        double relativeWindBearing = skipper.getRelativeAngle(windSpeed.bearing());
 
-        double speedKnot = windSpeedKnot.value() * polar.getSpeedCoefAt(windSpeedKnot.value(), relativeWindBearing);
+        double speedKnot = windSpeed.valueKnot() * polar.getSpeedCoefAt(windSpeed.valueKnot(), relativeWindBearing);
         double distanceKm = Trigo.knotToMeterPerSecond(speedKnot) * 3.6 * stepHour;
             result.speed.add(speedKnot);
             result.way.add(Trigo.pointAtDistanceAndBearing(lastPos, distanceKm, skipper.direction));
             result.windRelativeBearings.add(relativeWindBearing);
-            result.windBearing.add(windSpeedKnot.bearing());
-            result.windSpeedKnot.add(windSpeedKnot.value());
+            result.windBearing.add(windSpeed.bearing());
+            result.windSpeedKnot.add(windSpeed.valueKnot());
             result.distanceKm.add(distanceKm);
         }
         return result;

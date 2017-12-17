@@ -1,5 +1,7 @@
 package fr.sea_race.client.searace.model;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -25,6 +27,7 @@ public class Polar {
                 line[j] = jsonLine.getDouble(j);
             }
             this.data.add(line);
+
         }
     }
 
@@ -37,8 +40,11 @@ public class Polar {
         if (this.data.size() < sampledWind1 + 1) {
             sampledWind1 = sampledWind0;
         }
-        double sampledDirection0 = Math.floor(direction / 5) % 180;
-        double sampledDirection1 = Math.ceil((direction + 5) / 5) % 180;
+        double sampledDirection0 = Math.floor(direction / 5) % (180 / 5);
+        double sampledDirection1 = Math.floor((direction + 5) / 5) % (180 / 5);
+        Log.i("POLAR", "direction: " + direction + " | wind: " + wind + " | sampledWind0: " + sampledWind0 + "| sampledWind1: " + sampledWind1);
+        Log.i("Polar", "Wind: " + (wind / 10 - Math.floor(wind / 10)));
+        Log.i("Polar", "Direction: " + ((direction % 180) / 5 - sampledDirection0));
         return Trigo.interpolation(
             wind / 10 - Math.floor(wind / 10),
             (direction % 180) / 5 - sampledDirection0,

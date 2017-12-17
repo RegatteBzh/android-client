@@ -145,7 +145,11 @@ public class SkipperFragment extends Fragment {
     }
 
     private void estimateSpeed(float angle, LatLng position) {
-
+        if (skipper == null || windForecast == null || !windForecast.data.containsKey(0)) {
+            Log.i("Estimate speed", "Abort");
+            return;
+        }
+        displaySpeed(skipper.forecastSpeed(angle, windForecast.data.get(0), polar));
     }
 
     private void addBoatMarker(GoogleMap map) {
@@ -294,13 +298,22 @@ public class SkipperFragment extends Fragment {
         });
     }
 
+    private void displaySpeed(double speed) {
+        DisplayFeature speedElt = (DisplayFeature)getView().findViewById(R.id.speed);
+        speedElt.setValue(String.format("%.2f %s", speed, getString(R.string.speed_unit)));
+    }
+
+    private void displaySpeed(String speed) {
+        DisplayFeature speedElt = (DisplayFeature)getView().findViewById(R.id.speed);
+        speedElt.setValue(speed);
+    }
+
     private void updateView() {
         if (skipper != null && !isCompassRunning) {
-            DisplayFeature speed = (DisplayFeature)getView().findViewById(R.id.speed);
             if (skipper.isSpeedValid()) {
-                speed.setValue(String.format("%.2f %s", skipper.speed, getString(R.string.speed_unit)));
+                displaySpeed(skipper.speed);
             } else {
-                speed.setValue("--");
+                displaySpeed("--");
             }
 
             DisplayFeature direction = (DisplayFeature)getView().findViewById(R.id.direction);
